@@ -25,20 +25,42 @@ if img2 is not None:
     image2 = Image.open(img2)
     col2.image(image2, caption='Image-2', use_column_width=True)
 
+loss_dict = {"Contrastive Loss" : 1,"Binary Cross-Entropy" : 2}
+loss_func = st.selectbox("Select a loss function: ",["Binary Cross-Entropy","Contrastive Loss"],1)
 
-t = st.sidebar.slider("Similarity Threshold:",0,100,16)
+if loss_func == "Binary Cross-Entropy":
+    thresh = st.slider("Confidence Interval: ",0.0,1.0,0.5,0.1)
+else:
+    #thresh = st.slider("Inverse-Confidence Interval: ",10,25,17,1)
+    thresh = 17
+
+st.write("")
 click = st.button("Run similarity model")
+
 if click:
     if (img1 is not None) and (img2 is not None):
         text = st.empty()
-        st.write("")
-        text.write("Processing the images....")
+        text.write("### Processing the images....")
         time.sleep(1.5)
-        text.write("Predicting the similarity score....")
-        results = calculate_similarity(image1, image2, t)
+        text.write("### Predicting the similarity score....")
+        prediction = calculate_similarity(image1, image2, loss_dict[loss_func],text)
 
-        # print out the similarity score
-        text.write(f"The two products are {results[0]} with a similarity score of {results[1]}")
+        if loss_func == "Contrastive Loss":
+            # Contrastive Loss
+            if prediction > thresh:
+                result = "dissimilar"
+            else:
+                result = "similar"
+            text.write(f"### Output: The two products are **{result}** and can be grouped in to a similar class.")
+
+        else:
+            # Binary Cross-Entropy loss
+            if prediction > thresh:
+                result = "similar"
+            else:
+                result = "dissimilar"
+            text.write(f"### Output: The two products are **{result}**  with a similarity score of {prediction}.")
+
     else:
         text = st.empty()
         text.write("Upload images to run a similarity model !")
