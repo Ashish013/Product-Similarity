@@ -1,6 +1,9 @@
 import tensorflow as tf
 import cv2
+import gdown,os
 import numpy as np
+from zipfile import ZipFile
+
 from tensorflow.keras.layers import Dense,Input,Flatten
 from tensorflow.keras import Model
 from tensorflow.keras.applications.resnet50 import ResNet50
@@ -38,7 +41,13 @@ def calculate_similarity(img1,img2,t):
 
 	img1 = cv2.resize(np.asarray(img1,np.uint8),(256,256))
 	img2 = cv2.resize(np.asarray(img2,np.uint8),(256,256))
-	model = instantiate_model("./pretrained_new/weights")
+	if os.path.exists("./pretrained/weights") == False:
+		gdown.download("https://drive.google.com/uc?export=download&confirm=zgQ6&id=1WqDC3txOJ4yyR99N7Ut_rCJdaQiVruBl")
+
+	with ZipFile("./pretrained.zip", 'r') as zip:
+	  zip.extractall(path = './')
+
+	model = instantiate_model("./pretrained/weights")
 	#model = tf.keras.models.load_model('./trainedModel')
 
 
