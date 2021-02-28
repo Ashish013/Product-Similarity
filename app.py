@@ -49,9 +49,10 @@ if click:
             # Contrastive Loss
             if prediction > thresh:
                 result = "dissimilar"
+                text.write(f"### Result: The two products are **{result}** and **can't** be grouped in to a similar class.")
             else:
                 result = "similar"
-            text.write(f"### Output: The two products are **{result}** and can be grouped in to a similar class.")
+                text.write(f"### Result: The two products are **{result}** and can be grouped in to a similar class.")
 
         else:
             # Binary Cross-Entropy loss
@@ -63,7 +64,7 @@ if click:
 
     else:
         text = st.empty()
-        text.write("Upload images to run a similarity model !")
+        text.write("Upload images to run the similarity model !")
         time.sleep(2)
         text.write("")
 
