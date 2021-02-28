@@ -3,6 +3,7 @@ import cv2
 import gdown,os
 import numpy as np
 from zipfile import ZipFile
+import streamlit as st
 
 from tensorflow.keras.layers import Dense,Input,Flatten
 from tensorflow.keras import Model
@@ -18,7 +19,16 @@ class Euclidean_Distance(tf.keras.layers.Layer):
 		emb_A,emb_B = outputs
 		return tf.sqrt(tf.reduce_sum(tf.pow(tf.subtract(emb_A,emb_B),2),axis = 1))
 
-def instantiate_model(weights_path):
+class Difference_Squared(tf.keras.layers.Layer):
+	def __init__(self):
+		super(Difference_Squared, self).__init__()
+
+	def call(self, outputs):
+		emb_A,emb_B = outputs
+		return tf.pow(tf.subtract(emb_A,emb_B),2)
+
+
+def contrastive_model(weights_path):
 
 	# Initializes the embedding model and pre trained weights
 	ptm = ResNet50(input_shape = (img_size,img_size,3), include_top=False)
@@ -36,25 +46,50 @@ def instantiate_model(weights_path):
 
 	return model
 
+def cross_entropy_model(weights_path):
+	# Initializes the embedding model and pre trained weights
+	ptm = ResNet50(input_shape = (img_size,img_size,3), include_top=False)
+	x = Flatten()(ptm.output)
+	x = Dense(128)(x)
+	emb_model = Model(ptm.input,x)
 
-def calculate_similarity(img1,img2,t):
+	img_A = Input(shape = (img_size,img_size,3))
+	img_B = Input(shape = (img_size,img_size,3))
+	emb_A = emb_model(img_A)
+	emb_B = emb_model(img_B)
+	distance = Difference_Squared()([emb_A,emb_B])
+	distance = Dense(1,activation="sigmoid")(distance)
+	model = Model(inputs = [img_A,img_B], outputs = distance)
+	model.load_weights(weights_path)
+
+	return model
+
+def weights_download(path,weights_number,text):
+	if os.path.exists(path) == False:
+		text.write("### Downloading pre-trained weights....")
+		if weights_number == 1:
+			gdown.download("https://drive.google.com/uc?export=download&confirm=1TcX&id=1TdlcIwmbW4604XMw550jfmo5fAU8XoRH")
+		elif weights_number == 2:
+			gdown.download("https://drive.google.com/uc?export=download&confirm=WLfU&id=1xGFEkb5TbLFzJ4-Q30RgSeomUtVdzdkM")
+
+		with ZipFile(path, 'r') as zip:
+		  zip.extractall(path = './')
+
+		text.write("### Predicting the similarity score....")
+
+
+def calculate_similarity(img1,img2,weights_number,text):
 
 	img1 = cv2.resize(np.asarray(img1,np.uint8),(256,256))
 	img2 = cv2.resize(np.asarray(img2,np.uint8),(256,256))
-	if os.path.exists("./pretrained") == False:
-		gdown.download("https://drive.google.com/uc?export=download&confirm=zgQ6&id=1WqDC3txOJ4yyR99N7Ut_rCJdaQiVruBl")
 
-	with ZipFile("./pretrained.zip", 'r') as zip:
-	  zip.extractall(path = './')
+	if weights_number == 1:
+		weights_download("./pretrained-1.zip",1,text)
+		model = contrastive_model("./pretrained-1/weights")
+	elif weights_number == 2:
+		weights_download("./pretrained-2.zip",2,text)
+		model = cross_entropy_model("./pretrained-2/weights")
 
-	model = instantiate_model("./pretrained/weights")
-	#model = tf.keras.models.load_model('./trainedModel')
-
-
-	distance = model.predict([np.expand_dims(img1,axis = 0),np.expand_dims(img2,axis = 0)])
-
-	if distance > t:
-		return "dissimilar",np.squeeze(distance)
-	else:
-		return "similar",np.squeeze(distance)
+	prediction = model.predict([np.expand_dims(img1,axis = 0),np.expand_dims(img2,axis = 0)])
+	return np.squeeze(prediction)
 
