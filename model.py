@@ -41,7 +41,7 @@ def calculate_similarity(img1,img2,t):
 
 	img1 = cv2.resize(np.asarray(img1,np.uint8),(256,256))
 	img2 = cv2.resize(np.asarray(img2,np.uint8),(256,256))
-	if os.path.exists("./pretrained/weights") == False:
+	if os.path.exists("./pretrained") == False:
 		gdown.download("https://drive.google.com/uc?export=download&confirm=zgQ6&id=1WqDC3txOJ4yyR99N7Ut_rCJdaQiVruBl")
 
 	with ZipFile("./pretrained.zip", 'r') as zip:
