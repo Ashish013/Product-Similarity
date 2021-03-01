@@ -1,7 +1,7 @@
 # Image-Similarity
 This repository contains code for Product-Similarity, developed as a part of Hack-a-sol hackathon @IIIT Naya Raipur.
 
-The model is trained on 1500 images of grocery products and employs as Siamses style network model.
+The model is trained on 1500 images of grocery products and employs as Siamsese style network model.
 At the core of the sister networks sits a ResNet-50 architecture fine tuned on the 1500 images of groceries and trained against both Contrastive and Binary Cross Entropy loss, each individually.
 
 The application lets the user toggle between the 2 models trained on each of the losses respectively. A quick summary of the 2 losses can be articulated as :
