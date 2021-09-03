@@ -80,8 +80,8 @@ def weights_download(path,weights_number,text):
 
 def calculate_similarity(img1,img2,weights_number,text):
 
-	img1 = cv2.resize(np.asarray(img1,np.uint8),(256,256))
-	img2 = cv2.resize(np.asarray(img2,np.uint8),(256,256))
+	img1 = cv2.resize(np.asarray(img1,np.uint8),(256,256))[:,:,:3]
+	img2 = cv2.resize(np.asarray(img2,np.uint8),(256,256))[:,:,:3]
 
 	if weights_number == 1:
 		weights_download("./pretrained-1.zip",1,text)
