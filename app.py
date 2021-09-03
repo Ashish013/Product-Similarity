@@ -40,19 +40,19 @@ click = st.button("Run similarity model")
 if click:
     if (img1 is not None) and (img2 is not None):
         text = st.empty()
-        text.write("### Processing the images....")
+        text.write("Processing the images....")
         time.sleep(1.5)
-        text.write("### Predicting the similarity score....")
+        text.write("Predicting the similarity score....")
         prediction = calculate_similarity(image1, image2, loss_dict[loss_func],text)
 
         if loss_func == "Contrastive Loss":
             # Contrastive Loss
             if prediction > thresh:
                 result = "dissimilar"
-                text.write(f"### Result: The two products are **{result}** and **can't** be grouped in to a similar class.")
+                text.write(f"Result: The two products are **{result}** and **can't** be grouped in to a similar class.")
             else:
                 result = "similar"
-                text.write(f"### Result: The two products are **{result}** and can be grouped in to a similar class.")
+                text.write(f"Result: The two products are **{result}** and can be grouped in to a similar class.")
 
         else:
             # Binary Cross-Entropy loss
@@ -60,7 +60,7 @@ if click:
                 result = "similar"
             else:
                 result = "dissimilar"
-            text.write(f"### Output: The two products are **{result}**  with a similarity score of {prediction}.")
+            text.write(f"Output: The two products are **{result}**  with a similarity score of {prediction}.")
 
     else:
         text = st.empty()
