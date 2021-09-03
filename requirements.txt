@@ -1,7 +1,7 @@
 altair
 numpy
 pandas
-opencv-python-headless
+opencv-contrib-python
 cmake
 gdown
 zipfile36
