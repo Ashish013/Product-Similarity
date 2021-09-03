@@ -1,7 +1,5 @@
-altair
-pandas
+tensorflow
 opencv-contrib-python
 cmake
 gdown
 zipfile36
-tensorflow
